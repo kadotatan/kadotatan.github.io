@@ -31,7 +31,34 @@ body {
   font-size: 16px;
   line-height: 1.85;
   -webkit-font-smoothing: antialiased;
+  /* 日本語の禁則処理を厳格に（行頭に「。」「）」等が来ない） */
+  line-break: strict;
 }
+
+/* ===== 日本語の改行制御 =====
+   日本語は空白が無いため、指定しないと語の途中で平気で改行される。
+   ・balance … 見出しの各行の長さを揃える
+   ・pretty  … 最終行が1〜2文字だけになる「取り残し」を防ぐ
+   ・auto-phrase … 文節単位で改行する（対応ブラウザのみ／Safari未対応） */
+h1, h2, h3 { text-wrap: balance; }
+p, li, dd,
+.lede, .note, .meta, .q, .a,
+.appcard .d, .appcard .n,
+.block > span, .card span,
+footer span {
+  text-wrap: pretty;
+}
+@supports (word-break: auto-phrase) {
+  h1, h2, h3, p, li, dd,
+  .lede, .note, .meta, .q, .a,
+  .appcard .d, .block > span, .card span, footer span {
+    word-break: auto-phrase;
+  }
+}
+/* 見出しは文節ごとに inline-block で包み、途中で切れないようにする（Safari でも有効） */
+h1 .p { display: inline-block; }
+/* メールアドレスやコードは、はみ出すより折り返す */
+.addr a, code { overflow-wrap: anywhere; }
 .wrap {
   max-width: 760px;
   margin: 0 auto;
@@ -103,4 +130,18 @@ code {
 footer {
   border-top: 1px solid var(--rule); padding-top: 20px;
   color: var(--muted); font-size: 13px; display: flex; flex-direction: column; gap: 6px;
+}
+
+/* ===== スマートフォン ===== */
+@media (max-width: 560px) {
+  /* ヘッダーを縦積みに。margin-left:auto のままだと折り返し時に位置が飛ぶ */
+  .site-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .site-nav { margin-left: 0; gap: 8px 18px; font-size: 13.5px; }
+
+  .wrap { gap: 34px; }
+  h1 { line-height: 1.6; }
+  h2 { font-size: 18px; }
+  .card, .appcard, .contact { padding: 16px; }
+  .appgrid { grid-template-columns: 1fr; }
+  footer { font-size: 12.5px; }
 }
